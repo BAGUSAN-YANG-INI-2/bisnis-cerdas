@@ -886,3 +886,16 @@ Fitur lanjutan tidak termasuk komitmen MVP tujuh hari.
 > UMKM Financial Health Platform --- platform yang membantu pelaku UMKM
 > memahami kondisi keuangan, mengantisipasi risiko arus kas, dan
 > mengambil keputusan bisnis dengan lebih terarah.
+
+---
+
+## 📎 Dokumen Terkait
+
+| Dokumen | Relevansi |
+| :--- | :--- |
+| **[Panduan Rumus Finansial (financial-math.md)](financial-math.md)** | Penjabaran matematis detail dari formula Financial Health Score dan Runway |
+| **[Spesifikasi API Contract (api-contract.md)](api-contract.md)** | Kontrak antarmuka teknis REST API yang memenuhi kebutuhan FR-01 s/d FR-08 |
+| **[Dokumentasi Backend (backend.md)](backend.md)** | Arsitektur implementasi sistem backend, database, dan engine kalkulasi |
+| **[Dokumentasi Frontend (frontend.md)](frontend.md)** | Arsitektur antarmuka pengguna, navigasi, dan visualisasi data |
+| **[Desain Sistem & UI (design-system.md)](design-system.md)** | Spesifikasi visual, tokens warna, dan prinsip ergonomis antarmuka |
+| **[Panduan Developer & Docker (development-guide.md)](development-guide.md)** | Panduan teknis onboarding, setup lingkungan, dan kontribusi tim |

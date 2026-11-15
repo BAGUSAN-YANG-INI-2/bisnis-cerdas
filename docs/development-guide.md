@@ -93,6 +93,10 @@ docker compose run --rm --no-deps frontend sh -c "npx --yes create-vite@latest /
 
 ## 3. Menjalankan Project
 
+### 3.1 Via Docker Compose (Rekomendasi Utama)
+
+Cara ini **tidak memerlukan** instalasi PHP, Composer, Node, atau MySQL di laptop Anda.
+
 1. **Salin environment template:**
    ```bash
    cp .env.example .env
@@ -109,6 +113,66 @@ docker compose run --rm --no-deps frontend sh -c "npx --yes create-vite@latest /
    ```bash
    docker compose exec backend php artisan migrate
    ```
+
+4. **(Opsional) Jalankan layanan secara terpisah:**
+   ```bash
+   # Backend + Database saja (tanpa frontend)
+   docker compose up -d backend
+
+   # Frontend saja
+   docker compose up -d frontend
+   ```
+
+### 3.2 Tanpa Docker (Menjalankan Langsung di Laptop)
+
+Jika tidak ingin menggunakan Docker, Anda bisa menjalankan masing-masing layanan secara langsung. Pastikan semua prasyarat sudah terinstal:
+
+| Prasyarat | Versi Minimum | Cara Cek |
+| :--- | :--- | :--- |
+| PHP | 8.4+ | `php -v` |
+| Composer | 2.x | `composer -V` |
+| Node.js | 20.x LTS | `node -v` |
+| MySQL Server | 8.x | `mysql --version` |
+| Ekstensi PHP | `pdo_mysql`, `mbstring`, `bcmath`, `gd`, `zip` | `php -m` |
+
+#### A. Menjalankan Backend (Laravel)
+```bash
+# 1. Masuk ke direktori backend
+cd backend
+
+# 2. Install dependencies
+composer install
+
+# 3. Salin file environment dan sesuaikan koneksi database
+cp .env.example .env
+# Edit .env → atur DB_HOST=127.0.0.1, DB_DATABASE, DB_USERNAME, DB_PASSWORD
+
+# 4. Generate application key
+php artisan key:generate
+
+# 5. Jalankan migrasi database (pastikan MySQL sudah berjalan)
+php artisan migrate
+
+# 6. Jalankan development server
+php artisan serve --host=0.0.0.0 --port=8000
+```
+Backend API siap di: **`http://localhost:8000`**
+
+#### B. Menjalankan Frontend (React + Vite)
+```bash
+# 1. Masuk ke direktori frontend (buka terminal baru)
+cd frontend
+
+# 2. Install dependencies
+npm install
+
+# 3. Jalankan Vite development server
+npm run dev
+```
+Frontend siap di: **`http://localhost:3000`**
+
+> [!TIP]
+> Frontend bisa berjalan sendiri tanpa backend aktif (akan menggunakan data mock lokal secara otomatis). Namun untuk data riil dari database, backend dan MySQL harus aktif terlebih dahulu.
 
 ---
 
@@ -210,3 +274,14 @@ Jika ada rekan tim yang membuat Pull Request, ikuti langkah berikut untuk menguj
 | **Restart Container Tertentu** | `docker compose restart backend` |
 | **Hentikan Seluruh Container** | `docker compose down` |
 | **Hentikan & Reset Database** | `docker compose down -v` |
+
+---
+
+## 📎 Dokumen Terkait
+
+| Dokumen | Relevansi |
+| :--- | :--- |
+| **[Panduan Kontribusi (../CONTRIBUTING.md)](../CONTRIBUTING.md)** | Aturan branch protection, format commit, dan alur Pull Request |
+| **[Dokumentasi Backend (backend.md)](backend.md)** | Arsitektur Laravel, Service Layer, skema database, dan endpoint API |
+| **[Dokumentasi Frontend (frontend.md)](frontend.md)** | Arsitektur React, Context API, komponen UI, dan offline fallback |
+| **[API Contract (api-contract.md)](api-contract.md)** | Spesifikasi lengkap 14 endpoint REST API untuk pengujian |

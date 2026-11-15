@@ -194,29 +194,44 @@ Frontend dirancang dengan prinsip **Zero Failure**:
 
 ## 7. Panduan Menjalankan, Build & Testing
 
-### 7.1 Menjalankan via Docker Compose (Rekomendasi Utama)
-Frontend dijalankan bersamaan dengan Backend dan Database dari root proyek:
-```bash
-# Menjalankan seluruh stack aplikasi
-docker compose up -d
+> [!NOTE]
+> Untuk panduan lengkap cara menjalankan seluruh stack aplikasi (backend + frontend + database) via Docker Compose maupun secara mandiri tanpa Docker, lihat **[Panduan Developer & Docker (development-guide.md)](development-guide.md)**.
 
-# Mengecek status container frontend
-docker compose ps
+### 7.1 Menjalankan via Docker Compose (Rekomendasi)
+
+Dari **root folder** proyek (`bisnis-cerdas/`):
+```bash
+# Menjalankan seluruh stack (frontend, backend, database)
+docker compose up -d --build
+
+# Atau menjalankan frontend saja
+docker compose up -d frontend
 ```
-Aplikasi siap diakses melalui peramban di: **`http://localhost:3000`**
+Aplikasi siap diakses di: **`http://localhost:3000`**
 
-### 7.2 Menjalankan Frontend Secara Mandiri (Development Lokal)
-Jika ingin menjalankan frontend di luar Docker:
+### 7.2 Menjalankan Frontend Secara Mandiri (Tanpa Docker)
+
+Jika ingin menjalankan frontend langsung di sistem lokal tanpa Docker:
+
+| Prasyarat | Versi Minimum | Cara Cek |
+| :--- | :--- | :--- |
+| Node.js | 20.x LTS | `node -v` |
+| npm | 9.x+ | `npm -v` |
+
 ```bash
-# Masuk ke direktori frontend
+# 1. Masuk ke direktori frontend
 cd frontend
 
-# Install dependencies
+# 2. Install dependencies
 npm install
 
-# Jalankan Vite development server
+# 3. Jalankan Vite development server
 npm run dev
 ```
+Aplikasi siap diakses di: **`http://localhost:3000`**
+
+> [!TIP]
+> Frontend bisa berjalan mandiri tanpa backend aktif berkat mekanisme **Smart Fallback (Offline Mode)** — lihat [Bagian 6](#6-mekanisme-keandalan-smart-fallback-offline-mode). Namun untuk data riil dari database, pastikan backend dan MySQL sudah aktif.
 
 ### 7.3 Kompilasi Produksi (Production Build)
 Untuk memastikan tidak ada kesalahan kompilasi TypeScript/JSX:
@@ -224,3 +239,14 @@ Untuk memastikan tidak ada kesalahan kompilasi TypeScript/JSX:
 npm run build
 ```
 Hasil build teroptimasi akan dihasilkan pada folder `frontend/dist/`.
+
+---
+
+## 📎 Dokumen Terkait
+
+| Dokumen | Relevansi |
+| :--- | :--- |
+| **[Desain Sistem & UI (design-system.md)](design-system.md)** | Panduan palet warna, tipografi, dan komponen antarmuka yang digunakan frontend ini |
+| **[API Contract (api-contract.md)](api-contract.md)** | Spesifikasi endpoint REST API yang dikonsumsi oleh Service Layer frontend |
+| **[Dokumentasi Backend (backend.md)](backend.md)** | Arsitektur sisi server yang menyediakan data melalui API |
+| **[Panduan Developer & Docker (development-guide.md)](development-guide.md)** | Panduan inisialisasi, Docker Compose, dan alur Pull Request |

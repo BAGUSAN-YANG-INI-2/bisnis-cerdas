@@ -590,3 +590,14 @@ Menjalankan simulasi skenario "what-if" ketahanan kas tanpa memodifikasi catatan
 * `positive_cash_flow`: Pemasukan $\ge$ Pengeluaran $\rightarrow$ `simulated_runway_days: null` (kas bertambah, tidak habis)
 * `break_even`: Pemasukan = Pengeluaran $\rightarrow$ `simulated_runway_days: null` (kas stabil)
 * `insufficient_cash`: Kas tersedia $\le 0$ saat simulasi dijalankan $\rightarrow$ `simulated_runway_days: null`
+
+---
+
+## 📎 Dokumen Terkait
+
+| Dokumen | Relevansi |
+| :--- | :--- |
+| **[Dokumentasi Backend (backend.md)](backend.md)** | Arsitektur controller, route, dan service layer yang mengimplementasikan API ini |
+| **[Dokumentasi Frontend (frontend.md)](frontend.md)** | Service client frontend (`api.js`) dan penanganan response/error |
+| **[Panduan Rumus Finansial (financial-math.md)](financial-math.md)** | Dasar matematis untuk endpoint analisis `/api/dashboard`, `/api/financial-health`, dan `/api/runway/simulate` |
+| **[Panduan Developer & Docker (development-guide.md)](development-guide.md)** | Cara menjalankan backend API secara lokal untuk pengujian endpoint |

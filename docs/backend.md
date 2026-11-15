@@ -215,17 +215,73 @@ Riwayat commit telah disusun rapi sesuai pedoman [CONTRIBUTING.md](../CONTRIBUTI
 
 ## 8. Panduan Menjalankan & Testing
 
-### 1. Menjalankan Migrasi & Database Seeder:
-```bash
-docker compose exec backend php artisan migrate:fresh --seed
-```
+> [!NOTE]
+> Untuk panduan lengkap cara menjalankan seluruh stack aplikasi (backend + frontend + database) via Docker Compose maupun secara mandiri tanpa Docker, lihat **[Panduan Developer & Docker (development-guide.md)](development-guide.md)**.
 
-### 2. Menjalankan Seeder Demo Khusus:
-```bash
-docker compose exec backend php artisan db:seed --class=DemoBusinessSeeder
-```
+### 8.1 Menjalankan Backend via Docker Compose (Rekomendasi)
 
-### 3. Memverifikasi Rute API yang Terdaftar:
+Dari **root folder** proyek (`bisnis-cerdas/`):
 ```bash
-docker compose exec backend php artisan route:list --path=api
+# Menjalankan seluruh stack (frontend, backend, database)
+docker compose up -d --build
+
+# Atau menjalankan backend + database saja (tanpa frontend)
+docker compose up -d backend
 ```
+Backend API siap diakses di: **`http://localhost:8000`**
+
+### 8.2 Menjalankan Backend Secara Mandiri (Tanpa Docker)
+
+Jika ingin menjalankan backend langsung di sistem lokal tanpa Docker, pastikan prasyarat berikut terpenuhi:
+
+| Prasyarat | Versi Minimum | Cara Cek |
+| :--- | :--- | :--- |
+| PHP | 8.4+ | `php -v` |
+| Composer | 2.x | `composer -V` |
+| MySQL Server | 8.x | `mysql --version` |
+| Ekstensi PHP | `pdo_mysql`, `mbstring`, `bcmath`, `gd`, `zip` | `php -m` |
+
+```bash
+# 1. Masuk ke direktori backend
+cd backend
+
+# 2. Install dependencies
+composer install
+
+# 3. Salin file environment dan sesuaikan koneksi database
+cp .env.example .env
+# Edit .env → atur DB_HOST=127.0.0.1, DB_DATABASE, DB_USERNAME, DB_PASSWORD
+
+# 4. Generate application key
+php artisan key:generate
+
+# 5. Jalankan migrasi database
+php artisan migrate
+
+# 6. Jalankan development server
+php artisan serve --host=0.0.0.0 --port=8000
+```
+Backend API siap diakses di: **`http://localhost:8000`**
+
+### 8.3 Perintah Artisan Penting
+
+| Kebutuhan | Perintah |
+| :--- | :--- |
+| Migrasi & seeder lengkap | `docker compose exec backend php artisan migrate:fresh --seed` |
+| Seeder demo khusus | `docker compose exec backend php artisan db:seed --class=DemoBusinessSeeder` |
+| Verifikasi rute API | `docker compose exec backend php artisan route:list --path=api` |
+| Bersihkan cache | `docker compose exec backend php artisan optimize:clear` |
+
+> [!TIP]
+> Jika menjalankan tanpa Docker, ganti awalan `docker compose exec backend` dengan eksekusi langsung dari folder `backend/`, misalnya: `php artisan migrate:fresh --seed`.
+
+---
+
+## 📎 Dokumen Terkait
+
+| Dokumen | Relevansi |
+| :--- | :--- |
+| **[API Contract (api-contract.md)](api-contract.md)** | Spesifikasi lengkap 14 endpoint REST API yang diimplementasikan backend ini |
+| **[Panduan Rumus Finansial (financial-math.md)](financial-math.md)** | Penjelasan mendalam formula matematika yang diimplementasikan di Service Layer |
+| **[Panduan Developer & Docker (development-guide.md)](development-guide.md)** | Panduan inisialisasi, Docker Compose, dan alur Pull Request |
+| **[Dokumentasi Frontend (frontend.md)](frontend.md)** | Arsitektur sisi klien yang mengonsumsi API dari backend ini |

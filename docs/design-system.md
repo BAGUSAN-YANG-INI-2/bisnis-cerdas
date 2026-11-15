@@ -362,3 +362,13 @@ export const formatIDR = (amount: number): string => {
 ---
 
 *Dokumen ini dirancang sebagai acuan mutlak bagi tim Frontend dalam sprint 7 hari, memastikan kode yang dihasilkan rapi, fungsional, dan memiliki keunggulan visual yang matang di mata dewan juri.*
+
+---
+
+## 📎 Dokumen Terkait
+
+| Dokumen | Relevansi |
+| :--- | :--- |
+| **[Dokumentasi Frontend (frontend.md)](frontend.md)** | Implementasi komponen UI (`HealthGauge`, `CashflowChart`, `CurrencyInput`) berbasis desain ini |
+| **[Product Requirements Document (prd.md)](prd.md)** | Persona UMKM, batasan antarmuka, dan alur pengalaman pengguna |
+| **[Diagram Alur Sistem (flowchart.jpg)](flowchart.jpg)** | Peta visual interaksi antarmuka pengguna dari login hingga simulator |

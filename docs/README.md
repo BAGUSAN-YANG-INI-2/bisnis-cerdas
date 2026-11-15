@@ -8,16 +8,29 @@ Direktori ini dirancang secara terstruktur dan terpusat untuk memudahkan para ju
 
 ## 📑 Peta Dokumen & Navigasi
 
-| Dokumen | Deskripsi & Isi Utama | Audiens Utama |
+### 🏁 Mulai dari Sini (Onboarding Developer Baru)
+| # | Dokumen | Isi Utama |
 | :--- | :--- | :--- |
-| 📄 **[Product Requirements Document (prd.md)](prd.md)** | Dokumen spesifikasi kebutuhan produk MVP: latar belakang, persona pengguna, cakupan fitur, dan batasan teknis. | Semua Tim & Juri |
-| 📐 **[Panduan Rumus Finansial (financial-math.md)](financial-math.md)** | Penjelasan mendalam logika matematika: *Cash Coverage*, *Operating Expense Ratio*, *Net Cash Flow Margin*, serta simulasi *Runway*. | Tim Finansial & Backend |
-| 🔌 **[Spesifikasi API Contract (api-contract.md)](api-contract.md)** | Spesifikasi lengkap 14 REST API: format JSON, parameter query, kode status HTTP, dan otorisasi Sanctum. | Frontend & Backend |
-| 🐘 **[Dokumentasi Backend (backend.md)](backend.md)** | Arsitektur Laravel 11, Service Layer Pattern, struktur model Eloquent, skema database MySQL, dan data demo seeder. | Developer Backend |
-| ⚛️ **[Dokumentasi Frontend (frontend.md)](frontend.md)** | Arsitektur React 19 + Vite 8, Tailwind CSS v4, Context API State Management, Recharts visualisasi, dan *Offline Fallback*. | Developer Frontend |
-| 🎨 **[Desain Sistem & UI (design-system.md)](design-system.md)** | Panduan palet warna, tipografi, komponen antarmuka, dan standar pengalaman pengguna (UX). | UI/UX & Frontend |
-| 🐳 **[Panduan Setup & Docker (development-guide.md)](development-guide.md)** | Panduan langkah setup Docker tanpa instalasi manual di host, cheatsheet artisan/npm, dan alur Pull Request Git. | Seluruh Developer |
-| 🗺️ **[Diagram Alur Sistem (flowchart.jpg)](flowchart.jpg)** | Visualisasi diagram alur data dan proses bisnis dari autentikasi hingga dashboard analitik. | Semua Tim & Juri |
+| 1 | 🐳 **[Panduan Developer & Docker](development-guide.md)** | Setup lingkungan, menjalankan project (Docker & tanpa Docker), simulasi CI, alur PR |
+| 2 | 🤝 **[Panduan Kontribusi & Git](../CONTRIBUTING.md)** | Aturan branch protection, format commit bahasa Indonesia, checklist PR |
+
+### 📐 Spesifikasi Produk & Logika Bisnis
+| Dokumen | Isi Utama | Audiens |
+| :--- | :--- | :--- |
+| 📄 **[Product Requirements Document](prd.md)** | Latar belakang, persona, cakupan fitur MVP, dan batasan teknis | Semua Tim & Juri |
+| 📐 **[Panduan Rumus Finansial](financial-math.md)** | Formula *Cash Coverage*, *OER*, *Net Cash Flow Margin*, simulasi *Runway* | Backend & Juri |
+| 🔌 **[Spesifikasi API Contract](api-contract.md)** | 14 endpoint REST API: format JSON, query parameter, status HTTP, otorisasi Sanctum | Frontend & Backend |
+| 🗺️ **[Diagram Alur Sistem](flowchart.jpg)** | Visualisasi alur data dan proses bisnis dari autentikasi hingga dashboard | Semua Tim & Juri |
+
+### 🏗️ Dokumentasi Arsitektur Implementasi
+| Dokumen | Isi Utama | Audiens |
+| :--- | :--- | :--- |
+| 🐘 **[Dokumentasi Backend](backend.md)** | Arsitektur Laravel 11, Service Layer, skema database MySQL, logika bisnis, data demo seeder, dan cara menjalankan | Backend |
+| ⚛️ **[Dokumentasi Frontend](frontend.md)** | Arsitektur React 19 + Vite 8, Tailwind CSS v4, Context API, Recharts, *Offline Fallback*, dan cara menjalankan | Frontend |
+| 🎨 **[Desain Sistem & UI](design-system.md)** | Palet warna, tipografi, komponen antarmuka, standar UX *Anti AI Slop* | UI/UX & Frontend |
+
+> [!NOTE]
+> Setiap dokumen arsitektur (backend, frontend, development-guide) memiliki bagian **📎 Dokumen Terkait** di akhir halaman untuk navigasi antar dokumen yang saling berkaitan.
 
 ---
 

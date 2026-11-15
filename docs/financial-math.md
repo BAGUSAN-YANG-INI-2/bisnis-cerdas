@@ -384,3 +384,14 @@ Nama field dan format response di atas adalah usulan; selaraskan dengan API cont
 7. Angka API dikirim sebagai integer rupiah atau string decimal?
 
 **Urutan implementasi yang disarankan:** pastikan saldo dan agregasi dashboard benar terlebih dahulu. Setelah itu buat Cash Coverage, OER, Net Cash Flow Margin, Health Score, lalu Runway Simulator. Jangan mulai dari score sebelum definisi saldo awal, pemasukan, pengeluaran, kategori, dan periode sudah jelas.
+
+---
+
+## 📎 Dokumen Terkait
+
+| Dokumen | Relevansi |
+| :--- | :--- |
+| **[Product Requirements Document (prd.md)](prd.md)** | Kebutuhan produk dan latar belakang bisnis dari formula yang dirumuskan di sini |
+| **[Dokumentasi Backend (backend.md)](backend.md)** | Implementasi konkret formula ini di Service Layer Laravel (`FinancialHealthService`, `RunwayService`) |
+| **[Spesifikasi API Contract (api-contract.md)](api-contract.md)** | Format response JSON dari perhitungan metrik finansial untuk konsumsi frontend |
+| **[Dokumentasi Frontend (frontend.md)](frontend.md)** | Penyajian visual skor kesehatan (HealthGauge) dan simulasi runway di sisi klien |
