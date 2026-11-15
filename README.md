@@ -31,8 +31,7 @@ Semua image dasar Docker telah disesuaikan agar **memanfaatkan image lokal yang 
 bisnis-cerdas/
 ├── .github/
 │   └── workflows/
-│       ├── backend-ci.yml          # CI Backend (Dummy lint & test, GHCR upload khusus branch main)
-│       └── frontend-ci.yml         # CI Frontend (Dummy lint & test, GHCR upload khusus branch main)
+│       └── ci.yml                  # Unified CI/CD (Verify build pada PR, Push GHCR otomatis di main)
 ├── backend/
 │   ├── .dockerignore               # Filter file untuk image backend
 │   ├── .env.example                # Template konfigurasi environment Laravel
@@ -88,14 +87,14 @@ docker compose run --rm frontend sh -c "npx --yes create-vite@latest /tmp/app --
 
 ---
 
-## 🚀 Alur CI/CD & GHCR (GitHub Actions)
+## 🚀 Alur CI/CD & GHCR (GitHub Actions Terpadu)
 
 Sesuai aturan branch protection pada [CONTRIBUTING.md](CONTRIBUTING.md):
 - **Pull Request ke `dev` atau `main`:**
-  - `backend-lint-and-test` & `frontend-lint-and-test` akan berjalan.
-  - Menggunakan dummy assertions pada fase inisialisasi agar status check PR **langsung berstatus hijau (✅)** tanpa error.
+  - Menjalankan job `verify-build` menggunakan `docker compose build backend frontend`.
+  - Memverifikasi secara nyata bahwa kodingan Backend dan Frontend bisa di-build tanpa error sintaks / bundle. Status check langsung hijau (✅) jika build berhasil.
 - **Upload ke GHCR (GitHub Container Registry):**
   - **Hanya berjalan di branch `main`** setelah Pull Request berhasil di-merge (push ke `main`).
-  - Image di-publish ke:
-    - `ghcr.io/<repo>/backend`
-    - `ghcr.io/<repo>/frontend`
+  - Menggunakan Docker Compose untuk mem-build dan mem-push kedua image sekaligus ke:
+    - `ghcr.io/<repo>/backend:latest` (dan tag SHA commit)
+    - `ghcr.io/<repo>/frontend:latest` (dan tag SHA commit)

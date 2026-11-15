@@ -6,10 +6,14 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    image: ${BACKEND_IMAGE:-bisnis-cerdas-backend}
     container_name: umkm_backend
     restart: unless-stopped
     ports:
       - "${BACKEND_PORT:-8000}:8000"
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     environment:
       APP_NAME: "UMKM Financial Health Platform"
       APP_ENV: local
@@ -36,18 +40,20 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      target: development
+      target: ${FRONTEND_TARGET:-development}
+    image: ${FRONTEND_IMAGE:-bisnis-cerdas-frontend}
     container_name: umkm_frontend
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     environment:
       VITE_API_URL: ${VITE_API_URL:-http://localhost:8000/api}
     volumes:
       - ./frontend:/app
       - /app/node_modules
-    depends_on:
-      - backend
     networks:
       - umkm_network
 
