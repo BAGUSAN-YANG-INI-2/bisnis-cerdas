@@ -1,26 +1,38 @@
 #!/bin/bash
 set -e
 
-# If composer.json exists but vendor does not, install dependencies
-if [ -f "composer.json" ] && [ ! -d "vendor" ]; then
-    echo "[backend] Installing composer dependencies..."
-    composer install --no-interaction --prefer-dist --optimize-autoloader || true
-fi
+cd /var/www/html
 
-# If .env does not exist and .env.example exists, copy it
-if [ ! -f ".env" ] && [ -f ".env.example" ]; then
+# Otomatis buat .env dari .env.example jika belum ada
+if [ ! -f .env ] && [ -f .env.example ]; then
     echo "[backend] Copying .env.example to .env..."
     cp .env.example .env
 fi
 
-# Check if artisan exists
-if [ -f "artisan" ]; then
-    if [ ! -f ".env" ]; then
-        cp .env.example .env
+# Pastikan APP_KEY valid (32 bytes) tersedia di .env
+if [ -f .env ]; then
+    sed -i 's/c3VwZXJzZWNyZXRrZXlmaW5hbmNpYWxoZWFsdGg=/yd9JUmij\/+EO+QvIPzBN1rJRcaA1vlDRldEV4n7j6GY=/g' .env 2>/dev/null || true
+    if ! grep -q "^APP_KEY=base64:yd9JUmij" .env; then
+        sed -i 's/^APP_KEY=.*/APP_KEY=base64:yd9JUmij\/+EO+QvIPzBN1rJRcaA1vlDRldEV4n7j6GY=/g' .env 2>/dev/null || true
     fi
-    exec "$@"
-else
-    echo "[backend] Menunggu inisialisasi Laravel oleh developer di folder ./backend..."
-    echo "[backend] Letakkan project Laravel Anda di sini, service akan otomatis siap dijalankan."
-    exec sleep infinity
+    if ! grep -q "^APP_KEY=" .env; then
+        echo "APP_KEY=base64:yd9JUmij/+EO+QvIPzBN1rJRcaA1vlDRldEV4n7j6GY=" >> .env
+    fi
 fi
+
+# Pastikan direktori storage dan cache selalu siap dan memiliki izin tulis
+mkdir -p storage/framework/cache/data \
+         storage/framework/sessions \
+         storage/framework/views \
+         storage/logs \
+         bootstrap/cache
+chmod -R 777 storage bootstrap/cache 2>/dev/null || true
+
+# Jika vendor/autoload.php tidak ada, jalankan composer install
+if [ ! -f vendor/autoload.php ]; then
+    echo "[backend] vendor/autoload.php tidak ditemukan, menginstal dependensi..."
+    composer install --no-interaction --prefer-dist --optimize-autoloader
+fi
+
+# Eksekusi perintah container
+exec "$@"
