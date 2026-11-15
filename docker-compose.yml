@@ -77,11 +77,11 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-root_secret_password}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p${DB_ROOT_PASSWORD:-root_secret_password}"]
       interval: 5s
       timeout: 3s
       retries: 10
-      start_period: 10s
+      start_period: 15s
     networks:
       - umkm_network
 

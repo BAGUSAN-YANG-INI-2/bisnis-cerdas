@@ -134,6 +134,24 @@ jobs:
           echo "=========================================================="
           echo "4. Menjalankan migrasi database dan seeder demo..."
           echo "=========================================================="
+          echo "Memastikan koneksi database MySQL siap diakses dari backend..."
+          DB_READY=false
+          for i in {1..30}; do
+            if docker compose exec -T backend php -r "try { new PDO('mysql:host=mysql;port=3306;dbname=bisnis_cerdas', 'bisnis_user', 'bisnis_secret_password'); exit(0); } catch (Exception \$e) { exit(1); }"; then
+              echo "✅ Backend berhasil tersambung ke MySQL port 3306!"
+              DB_READY=true
+              break
+            fi
+            echo "Menunggu koneksi TCP MySQL... ($i/30)"
+            sleep 2
+          done
+
+          if [ "$DB_READY" != "true" ]; then
+            echo "❌ Backend gagal terhubung ke MySQL!"
+            docker compose logs mysql
+            exit 1
+          fi
+
           docker compose exec -T backend php artisan migrate --force
           docker compose exec -T backend php artisan db:seed --class=DemoBusinessSeeder --force
 
