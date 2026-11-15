@@ -176,22 +176,44 @@ Frontend siap di: **`http://localhost:3000`**
 
 ---
 
-## 4. Menguji Build Lokal Tanpa Push (Simulasi CI)
+## 4. Menguji Build & Menjalankan Lokal Tanpa Push (Simulasi CI)
 
-Sebelum membuat Pull Request, Anda bisa memastikan apakah kode Anda akan lolos uji CI GitHub Actions:
+Sebelum membuat Pull Request, Anda bisa menguji secara lokal apakah kode Anda akan lolos seluruh tahapan verifikasi GitHub Actions:
 
-### Di PowerShell (Windows):
-```powershell
-$env:FRONTEND_TARGET="production"
-docker compose build backend frontend
-```
-
-### Di Git Bash / Mac / Linux:
+### 4.1 Simulasi Jalur Docker (Rekomendasi Utama)
+Uji apakah seluruh container bisa di-build dan berjalan dengan baik:
 ```bash
-FRONTEND_TARGET=production docker compose build backend frontend
+# 1. Jalankan stack di background
+docker compose up -d --build
+
+# 2. Uji migrasi dan seeder
+docker compose exec backend php artisan migrate:fresh --seed
+
+# 3. Uji endpoint di browser/terminal
+curl http://localhost:8000
+curl http://localhost:3000
+
+# 4. Hentikan container setelah pengujian
+docker compose down -v
 ```
 
-*Jika proses build di atas selesai dengan kode 0 (tanpa error), maka status check GitHub Actions di cloud dipastikan 100% hijau (✅).*
+### 4.2 Simulasi Jalur Non-Docker (Bagi yang Tidak Menggunakan Docker)
+
+#### A. Uji Frontend:
+```bash
+cd frontend
+npm ci
+npm run build
+```
+
+#### B. Uji Backend:
+```bash
+cd backend
+composer install
+php artisan route:list --path=api
+```
+
+*Jika seluruh proses di atas selesai tanpa error, maka ketiga status check GitHub Actions di cloud dipastikan 100% hijau (✅).*
 
 ---
 

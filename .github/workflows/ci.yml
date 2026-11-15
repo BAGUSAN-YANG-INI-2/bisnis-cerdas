@@ -15,8 +15,82 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  verify-build:
-    name: Verify Docker Build (Backend & Frontend)
+  # ============================================================================
+  # 1. VERIFIKASI NATIVE FRONTEND (Jalur Tanpa Docker)
+  # Memastikan frontend bisa di-install dan di-build oleh developer tanpa Docker
+  # ============================================================================
+  verify-native-frontend:
+    name: Verify Native Frontend (Node 20 / Vite)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Dependencies & Test Build
+        run: |
+          cd frontend
+          echo "=========================================================="
+          echo "📦 [FRONTEND] Menginstal dependensi npm..."
+          echo "=========================================================="
+          npm ci
+          echo "=========================================================="
+          echo "🔨 [FRONTEND] Menguji kompilasi production build (Vite)..."
+          echo "=========================================================="
+          npm run build
+          echo "✅ Frontend React/Vite berhasil di-build tanpa Docker!"
+
+  # ============================================================================
+  # 2. VERIFIKASI NATIVE BACKEND (Jalur Tanpa Docker)
+  # Memastikan backend bisa di-install dan route/syntax valid tanpa Docker
+  # ============================================================================
+  verify-native-backend:
+    name: Verify Native Backend (PHP 8.4 / Laravel)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, pdo_mysql, bcmath, gd, zip
+          coverage: none
+
+      - name: Install Dependencies & Verify Routes
+        run: |
+          cd backend
+          echo "=========================================================="
+          echo "📝 [BACKEND] Menyiapkan environment..."
+          echo "=========================================================="
+          cp .env.example .env
+          echo "=========================================================="
+          echo "📦 [BACKEND] Menginstal dependensi Composer..."
+          echo "=========================================================="
+          composer install --no-interaction --prefer-dist --optimize-autoloader
+          echo "=========================================================="
+          echo "🔑 [BACKEND] Generate application key..."
+          echo "=========================================================="
+          php artisan key:generate
+          echo "=========================================================="
+          echo "🔍 [BACKEND] Memverifikasi rute REST API dan controller..."
+          echo "=========================================================="
+          php artisan route:list --path=api
+          echo "✅ Backend Laravel valid dan seluruh rute terdaftar tanpa Docker!"
+
+  # ============================================================================
+  # 3. VERIFIKASI DOCKER STACK END-TO-END (Rekomendasi Utama)
+  # Memastikan seluruh container (Backend, Frontend, MySQL) running & terintegrasi
+  # ============================================================================
+  verify-docker-e2e:
+    name: Verify Docker Stack E2E (Compose Up & Migrate)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -25,19 +99,74 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Test Docker Compose Build
+      - name: Test Docker Compose Build & Up
         env:
           FRONTEND_TARGET: production
         run: |
           echo "=========================================================="
-          echo "🔍 Verifying Docker build for Backend & Frontend..."
+          echo "1. Salin environment konfigurasi..."
           echo "=========================================================="
-          docker compose build backend frontend
-          echo "✅ Build verified successfully! Both Backend & Frontend build cleanly."
+          cp .env.example .env
 
+          echo "=========================================================="
+          echo "2. Nyalakan seluruh container di background..."
+          echo "=========================================================="
+          docker compose up -d --build
+
+          echo "=========================================================="
+          echo "3. Menunggu database MySQL siap (healthy)..."
+          echo "=========================================================="
+          MYSQL_READY=false
+          for i in {1..45}; do
+            STATUS=$(docker inspect --format='{{json .State.Health.Status}}' umkm_mysql 2>/dev/null || echo "starting")
+            if [ "$STATUS" == "\"healthy\"" ]; then
+              echo "✅ MySQL sudah siap dan berstatus healthy!"
+              MYSQL_READY=true
+              break
+            fi
+            echo "Menunggu MySQL siap... ($i/45)"
+            sleep 2
+          done
+
+          if [ "$MYSQL_READY" != "true" ]; then
+            echo "❌ MySQL gagal mencapai status healthy dalam batas waktu!"
+            docker compose logs mysql
+            exit 1
+          fi
+
+          echo "=========================================================="
+          echo "4. Menjalankan migrasi database dan seeder demo..."
+          echo "=========================================================="
+          docker compose run --rm backend php artisan migrate --force
+          docker compose run --rm backend php artisan db:seed --class=DemoBusinessSeeder --force
+
+          echo "=========================================================="
+          echo "5. Memastikan server backend aktif & verifikasi HTTP..."
+          echo "=========================================================="
+          docker compose restart backend
+          sleep 3
+
+          # Jika backend berhenti, tampilkan log-nya agar mudah di-debug
+          if [ "$(docker inspect --format='{{.State.Running}}' umkm_backend 2>/dev/null)" != "true" ]; then
+            echo "⚠️ Log umkm_backend:"
+            docker compose logs backend
+          fi
+
+          curl --fail --retry 5 --retry-delay 2 http://localhost:8000 || exit 1
+          curl --fail --retry 5 --retry-delay 2 http://localhost:3000 || exit 1
+
+          echo "=========================================================="
+          echo "6. Bersihkan container..."
+          echo "=========================================================="
+          docker compose down -v
+          echo "✅ Seluruh stack Docker terbukti berjalan dan siap digunakan!"
+
+  # ============================================================================
+  # 4. BUILD & PUSH KE GHCR (Hanya berjalan di branch 'main' jika semua lolos)
+  # ============================================================================
   build-and-push-ghcr:
     name: Build & Push Images to GHCR
-    needs: [verify-build]
+    needs: [verify-native-frontend, verify-native-backend, verify-docker-e2e]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:

@@ -137,10 +137,13 @@ docker compose run --rm --no-deps frontend sh -c "npx --yes create-vite@latest /
 
 Sesuai aturan branch protection pada [CONTRIBUTING.md](CONTRIBUTING.md):
 - **Pull Request ke `dev` atau `main`:**
-  - Menjalankan job `verify-build` (`docker compose build backend frontend`).
-  - Memverifikasi secara nyata bahwa kodingan Backend dan Frontend bisa di-build tanpa error sintaks / bundle. Status check langsung hijau (✅) jika build berhasil.
+  - Menjalankan 3 job verifikasi secara paralel:
+    1. 🐳 **`verify-docker-e2e` (Rekomendasi Utama)**: Menguji secara nyata `docker compose up`, migrasi database, dan respons HTTP server.
+    2. ⚛️ **`verify-native-frontend` (Tanpa Docker)**: Menguji instalasi dependensi npm dan kompilasi build Vite.
+    3. 🐘 **`verify-native-backend` (Tanpa Docker)**: Menguji instalasi Composer dan validitas rute API Laravel.
+  - Memverifikasi secara komprehensif bahwa kode dapat dijalankan baik oleh developer dengan Docker maupun tanpa Docker. Status check langsung hijau (✅) jika seluruh pengujian berhasil.
 - **Upload ke GHCR (GitHub Container Registry):**
-  - **Hanya berjalan di branch `main`** setelah Pull Request berhasil di-merge (push ke `main`).
+  - **Hanya berjalan di branch `main`** setelah Pull Request berhasil di-merge (push ke `main`) dan ketiga pengujian di atas berstatus hijau.
   - Mem-build dan mem-push kedua image sekaligus ke:
     - `ghcr.io/<repo>/backend:latest` (dan tag SHA commit)
     - `ghcr.io/<repo>/frontend:latest` (dan tag SHA commit)

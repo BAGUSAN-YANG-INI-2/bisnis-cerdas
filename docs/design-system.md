@@ -8,14 +8,7 @@
 
 ---
 
-## 1. Filosofi Desain: Anti AI Slop
-
-### Masalah Desain Berbasis "AI Slop"
-Banyak template web hasil AI memiliki karakteristik generik yang gagal di dunia nyata:
-- Latar belakang serba gelap (*dark mode*) dengan efek neon/ungu gradient mengambang yang melelahkan mata.
-- Jarak antar elemen terlalu renggang (*wasteful whitespace*) dan sudut terlalu bulat (`rounded-3xl`) sehingga informasi terpotong di layar kecil.
-- Copywriting hiperbolik ("*Unleash AI-Powered Financial Synergy*") alih-alih bahasa yang dipahami pemilik warung atau pedagang.
-- Kartu-kartu kosong tanpa hierarki angka atau tanpa pembeda jelas antara arus masuk dan arus keluar.
+## 1. Filosofi Desain:
 
 ### Standar Kita: *Honest, Grounded, & Purpose-Built*
 1. **Light-Theme First & High Contrast:** Pemilik UMKM sering mencatat transaksi di lingkungan terang (toko, warung, dapur produksi). Kita prioritaskan kontras tinggi, latar netral hangat (*warm slate*), dan minim silau.
