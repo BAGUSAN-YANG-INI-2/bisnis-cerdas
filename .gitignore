@@ -80,4 +80,3 @@ coverage/
 *.crt
 credentials.json
 auth.json
-DEVELOPMENT_GUIDE.md
