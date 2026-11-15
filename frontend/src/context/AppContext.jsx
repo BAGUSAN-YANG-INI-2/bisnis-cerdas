@@ -6,6 +6,12 @@ import { api } from '../services/api';
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
+  const [token, setToken] = useState(() => localStorage.getItem("umkm_token"));
+  const [authLoading, setAuthLoading] = useState(() => {
+    const t = localStorage.getItem("umkm_token");
+    return !!t && t !== "demo-standalone-token";
+  });
+
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("umkm_user");
     return saved ? JSON.parse(saved) : INITIAL_USER;
@@ -21,13 +27,25 @@ export const AppProvider = ({ children }) => {
   const [isConnectedToBe, setIsConnectedToBe] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Status autentikasi: user terautentikasi jika memiliki token
+  const isAuthenticated = !!token;
+
   // Sync data from backend if token exists
   const syncFromBackend = useCallback(async () => {
-    const token = localStorage.getItem('umkm_token');
-    if (!token) {
+    const currentToken = localStorage.getItem('umkm_token');
+    if (!currentToken) {
       setIsConnectedToBe(false);
+      setAuthLoading(false);
       return;
     }
+
+    // Jika masuk via mode standalone demo offline
+    if (currentToken === 'demo-standalone-token') {
+      setIsConnectedToBe(false);
+      setAuthLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const meData = await api.getMe();
@@ -50,11 +68,19 @@ export const AppProvider = ({ children }) => {
       if (Array.isArray(txList) && txList.length > 0) {
         setTransactions(txList);
       }
-    } catch {
-      // If backend token is invalid or server down, fallback to local
-      setIsConnectedToBe(false);
+    } catch (err) {
+      if (err.status === 401) {
+        // Sesi token di server sudah tidak valid / revoked
+        localStorage.removeItem('umkm_token');
+        setToken(null);
+        setIsConnectedToBe(false);
+      } else {
+        // Backend offline / network failure: fallback ke local cache tanpa logout
+        setIsConnectedToBe(false);
+      }
     } finally {
       setLoading(false);
+      setAuthLoading(false);
     }
   }, []);
 
@@ -75,6 +101,9 @@ export const AppProvider = ({ children }) => {
     try {
       const data = await api.login(email, password);
       setIsConnectedToBe(true);
+      if (data.token) {
+        setToken(data.token);
+      }
       const u = data.user;
       // business_profile is at data level, NOT inside data.user
       const profile = data.business_profile || u.business_profile || {};
@@ -96,7 +125,6 @@ export const AppProvider = ({ children }) => {
 
       return { success: true };
     } catch (err) {
-      // If backend fails but user wants demo mode, allow fallback
       return { success: false, message: err.message };
     }
   };
@@ -106,8 +134,11 @@ export const AppProvider = ({ children }) => {
     try {
       const data = await api.register(payload);
       setIsConnectedToBe(true);
+      if (data.token) {
+        setToken(data.token);
+      }
       const u = data.user;
-      const profile = u.business_profile || {};
+      const profile = data.business_profile || u.business_profile || {};
       const newUser = {
         id: u.id,
         name: u.name,
@@ -122,6 +153,17 @@ export const AppProvider = ({ children }) => {
     } catch (err) {
       return { success: false, message: err.message };
     }
+  };
+
+  // Standalone demo login handler
+  const loginDemo = () => {
+    const demoToken = "demo-standalone-token";
+    localStorage.setItem("umkm_token", demoToken);
+    setToken(demoToken);
+    setIsConnectedToBe(false);
+    setUser(INITIAL_USER);
+    setTransactions(INITIAL_TRANSACTIONS);
+    return { success: true };
   };
 
   // Logout handler
@@ -167,6 +209,7 @@ export const AppProvider = ({ children }) => {
 
   const resetData = () => {
     localStorage.removeItem("umkm_token");
+    setToken(null);
     setIsConnectedToBe(false);
     setUser(INITIAL_USER);
     setTransactions(INITIAL_TRANSACTIONS);
@@ -191,8 +234,11 @@ export const AppProvider = ({ children }) => {
         isAddModalOpen,
         setIsAddModalOpen,
         isConnectedToBe,
+        isAuthenticated,
+        authLoading,
         login,
         register,
+        loginDemo,
         logout,
         loading
       }}

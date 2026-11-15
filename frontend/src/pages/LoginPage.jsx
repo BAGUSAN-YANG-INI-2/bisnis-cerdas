@@ -4,7 +4,7 @@ import { TrendingUp, Eye, EyeOff, AlertCircle, Database, Sparkles } from 'lucide
 import { useApp } from '../context/AppContext';
 
 export const LoginPage = () => {
-  const { login, user } = useApp();
+  const { login, loginDemo, user } = useApp();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -142,17 +142,6 @@ export const LoginPage = () => {
             Daftar gratis sekarang
           </Link>
         </p>
-
-        {/* Demo shortcuts */}
-        <div className="mt-3 text-center">
-          <button
-            type="button"
-            onClick={() => navigate("/dashboard", { replace: true })}
-            className="text-xs text-slate-400 hover:text-slate-600 underline underline-offset-2 cursor-pointer"
-          >
-            Masuk Mode Standalone Demo ({user.name})
-          </button>
-        </div>
       </div>
     </div>
   );

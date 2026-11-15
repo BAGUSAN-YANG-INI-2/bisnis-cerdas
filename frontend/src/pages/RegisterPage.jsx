@@ -79,17 +79,7 @@ export const RegisterPage = () => {
     if (result.success) {
       navigate("/dashboard", { replace: true });
     } else {
-      // Local fallback
-      setUser({
-        id: Date.now(),
-        name: form.name.trim(),
-        email: form.email.trim(),
-        business_name: form.business_name.trim(),
-        business_type: form.business_type,
-        initial_cash_balance: rawBalance,
-        created_at: new Date().toISOString()
-      });
-      navigate("/dashboard", { replace: true });
+      setErrors((prev) => ({ ...prev, form: result.message || "Gagal melakukan registrasi." }));
     }
   };
 
@@ -126,6 +116,12 @@ export const RegisterPage = () => {
 
         <form onSubmit={step === 1 ? (e) => { e.preventDefault(); handleNext(); } : handleSubmit}>
           <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-xs space-y-4">
+            {errors.form && (
+              <div className="rounded-md bg-rose-50 border border-rose-200 p-3 flex items-center gap-2 text-xs text-rose-700">
+                <AlertCircle className="h-4 w-4 shrink-0" />
+                {errors.form}
+              </div>
+            )}
             {step === 1 ? (
               <>
                 <div>

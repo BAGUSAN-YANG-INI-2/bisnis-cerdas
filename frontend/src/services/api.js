@@ -74,7 +74,11 @@ export const api = {
     const res = await fetch(`${API_BASE_URL}/me`, {
       headers: getAuthHeaders()
     });
-    if (!res.ok) throw new Error('Sesi berakhir');
+    if (!res.ok) {
+      const err = new Error('Sesi berakhir');
+      err.status = res.status;
+      throw err;
+    }
     const data = await res.json();
     return data.data;
   },
